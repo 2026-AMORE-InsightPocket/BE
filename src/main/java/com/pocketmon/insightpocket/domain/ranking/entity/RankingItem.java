@@ -40,6 +40,6 @@ public class RankingItem extends CreatedEntity {
     private BigDecimal price;
 
     @Convert(converter = YesNoBooleanConverter.class)
-    @Column(name = "is_laneige", length = 1, nullable = false)
+    @Column(name = "is_laneige", nullable = false, columnDefinition = "CHAR(1)")
     private Boolean isLaneige;
 }
