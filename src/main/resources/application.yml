@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    driver-class-name: oracle.jdbc.OracleDriver
+    url: jdbc:oracle:thin:@(description=(retry_count=20)(retry_delay=3)(address=(protocol=tcps)(port=1522)(host=adb.ap-chuncheon-1.oraclecloud.com))(connect_data=(service_name=g33e728f478bb14_insightpocketdb_tp.adb.oraclecloud.com))(security=(ssl_server_dn_match=yes)))
+    username: ${ORACLE_DB_USERNAME}
+    password: ${ORACLE_DB_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true

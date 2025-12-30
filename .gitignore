@@ -45,3 +45,6 @@ out/
 ### yml
 applicaiton-dev.yml
 application-prod.yml
+
+## env
+.env
