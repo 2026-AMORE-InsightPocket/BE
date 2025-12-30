@@ -1,4 +1,4 @@
-package com.pocketmon.insightpocket.domain.common;
+package com.pocketmon.insightpocket.global.common;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
