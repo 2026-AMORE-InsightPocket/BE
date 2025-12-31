@@ -31,4 +31,11 @@ public class RankingSnapshot extends CreatedEntity {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
+
+    public static RankingSnapshot create(LocalDateTime snapshotTime, Category category) {
+        RankingSnapshot s = new RankingSnapshot();
+        s.snapshotTime = snapshotTime;
+        s.category = category;
+        return s;
+    }
 }
