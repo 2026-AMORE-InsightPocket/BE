@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -26,16 +28,43 @@ public class RankingIngestService {
     private final RankingSnapshotRepository snapshotRepository;
     private final RankingItemRepository itemRepository;
 
+    /**
+     * 스냅샷 1세트(카테고리 5개)를 한 번에 ingest.
+     * - 요청 배열이 비어있으면 400
+     * - snapshot_time이 서로 다르면 400
+     * - 전체를 하나의 트랜잭션으로 처리 (중간에 하나라도 실패하면 롤백)
+     */
     @Transactional
-    public RankingSnapshotIngestResponse ingest(RankingSnapshotIngestRequest req) {
+    public List<RankingSnapshotIngestResponse> ingestBatch(List<RankingSnapshotIngestRequest> requests) {
+        if (requests == null || requests.isEmpty()) {
+            throw new IllegalArgumentException("empty snapshot payload");
+        }
 
-        LocalDateTime snapshotTime =
-                LocalDateTime.parse(req.getSnapshotTime(), SNAPSHOT_FORMAT);
+        String snapshotTimeStr = requests.get(0).getSnapshotTime();
+        for (RankingSnapshotIngestRequest r : requests) {
+            if (r.getSnapshotTime() == null || !snapshotTimeStr.equals(r.getSnapshotTime())) {
+                throw new IllegalArgumentException("snapshot_time mismatch");
+            }
+        }
+
+        List<RankingSnapshotIngestResponse> responses = new ArrayList<>();
+        for (RankingSnapshotIngestRequest req : requests) {
+            responses.add(ingestSingle(req));
+        }
+        return responses;
+    }
+
+    /**
+     * 단일 카테고리 1개 ingest (기존 로직 그대로 분리)
+     * - (category_id, snapshot_time) 유니크 기반 멱등
+     * - (snapshot_id, rank) 기준 upsert
+     */
+    private RankingSnapshotIngestResponse ingestSingle(RankingSnapshotIngestRequest req) {
+        LocalDateTime snapshotTime = LocalDateTime.parse(req.getSnapshotTime(), SNAPSHOT_FORMAT);
 
         Category category = categoryRepository.findByCode(req.getCategory())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 category: " + req.getCategory()));
 
-        // (category_id, snapshot_time) 유니크 기반으로 멱등 처리
         RankingSnapshot snapshot = snapshotRepository
                 .findByCategoryAndSnapshotTime(category, snapshotTime)
                 .orElseGet(() -> snapshotRepository.save(
