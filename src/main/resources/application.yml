@@ -14,3 +14,10 @@ spring:
       hibernate:
         format_sql: true
         show_sql: true
+
+springdoc:
+  swagger-ui:
+    config-url: /v3/api-docs/swagger-config
+    url: /v3/api-docs
+  api-docs:
+    enabled: true
