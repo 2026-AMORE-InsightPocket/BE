@@ -15,7 +15,7 @@ import java.util.List;
 public class RankingSnapshotIngestRequest {
 
     @NotNull
-    private String snapshot_time;
+    private String snapshotTime;
 
     @NotBlank
     private String category; // ex) "lip_care"
@@ -30,12 +30,12 @@ public class RankingSnapshotIngestRequest {
         private Integer rank; // 1~30
 
         @NotBlank
-        private String product_name;
+        private String productName;
 
         @NotNull
         private BigDecimal price;
 
         @NotNull
-        private Boolean is_laneige;
+        private Boolean isLaneige;
     }
 }
