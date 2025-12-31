@@ -30,7 +30,7 @@ public class RankingIngestService {
     public RankingSnapshotIngestResponse ingest(RankingSnapshotIngestRequest req) {
 
         LocalDateTime snapshotTime =
-                LocalDateTime.parse(req.getSnapshot_time(), SNAPSHOT_FORMAT);
+                LocalDateTime.parse(req.getSnapshotTime(), SNAPSHOT_FORMAT);
 
         Category category = categoryRepository.findByCode(req.getCategory())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 category: " + req.getCategory()));
@@ -52,14 +52,14 @@ public class RankingIngestService {
                 RankingItem newItem = RankingItem.create(
                         snapshot,
                         it.getRank(),
-                        it.getProduct_name(),
+                        it.getProductName(),
                         it.getPrice(),
-                        it.getIs_laneige()
+                        it.getIsLaneige()
                 );
                 itemRepository.save(newItem);
                 inserted++;
             } else {
-                item.update(it.getProduct_name(), it.getPrice(), it.getIs_laneige());
+                item.update(it.getProductName(), it.getPrice(), it.getIsLaneige());
                 updated++;
             }
         }
