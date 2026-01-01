@@ -17,7 +17,7 @@ public class RankingIngestController {
 
     private final RankingIngestService rankingIngestService;
 
-    @PostMapping("/snapshots")
+    @PostMapping("/snapshots/ingest")
     public ResponseEntity<List<RankingSnapshotIngestResponse>> ingestSnapshots(
             @RequestBody @Valid List<@Valid RankingSnapshotIngestRequest> requests
     ) {
