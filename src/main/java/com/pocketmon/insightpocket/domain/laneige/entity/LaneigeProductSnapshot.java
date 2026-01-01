@@ -38,7 +38,7 @@ public class LaneigeProductSnapshot extends CreatedEntity {
     private BigDecimal price;
 
     @Column(name = "review_count", nullable = false)
-    private Long reviewCount;
+    private Long reviewCount = 0L;
 
     @Column(name = "rating", precision = 3, scale = 1)
     private BigDecimal rating;

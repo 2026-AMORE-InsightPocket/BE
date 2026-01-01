@@ -28,16 +28,16 @@ public class LaneigeAspectDetail extends CreatedEntity {
     @JoinColumn(name = "product_snapshot_id", nullable = false)
     private LaneigeProductSnapshot productSnapshot;
 
-    @Column(name = "aspect_name", length = 200, nullable = false)
+    @Column(name = "aspect_name", length = 200)
     private String aspectName;
 
-    @Column(name = "mention_total", nullable = false)
+    @Column(name = "mention_total")
     private Long mentionTotal;
 
-    @Column(name = "mention_positive", nullable = false)
+    @Column(name = "mention_positive")
     private Long mentionPositive;
 
-    @Column(name = "mention_negative", nullable = false)
+    @Column(name = "mention_negative")
     private Long mentionNegative;
 
     @Lob

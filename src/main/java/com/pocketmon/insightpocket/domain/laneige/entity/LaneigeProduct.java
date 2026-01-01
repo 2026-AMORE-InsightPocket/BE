@@ -30,7 +30,7 @@ public class LaneigeProduct extends BaseEntity {
     @Column(name = "image_url", length = 2000)
     private String imageUrl;
 
-    @Column(name = "style", length = 300, nullable = false)
+    @Column(name = "style", length = 300)
     private String style;
 
     @Lob
