@@ -76,14 +76,17 @@ jobs:
             set -e
             cd /home/ubuntu/insight-pocket
 
+            echo "[pre] docker compose version"
+            sudo docker compose version
+
             echo "[0/4] pull"
-            sudo docker-compose pull
+            sudo docker compose pull
 
             echo "[1/4] down (remove old containers)"
-            sudo docker-compose down --remove-orphans
+            sudo docker compose down --remove-orphans
 
             echo "[2/4] up -d"
-            sudo docker-compose up -d
+            sudo docker compose up -d
 
             echo "[3/4] prune"
             sudo docker image prune -f
