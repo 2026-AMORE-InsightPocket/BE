@@ -32,13 +32,13 @@ public class LaneigeAspectDetail extends CreatedEntity {
     private String aspectName;
 
     @Column(name = "mention_total")
-    private Long mentionTotal;
+    private Long mentionTotal =0L;
 
     @Column(name = "mention_positive")
-    private Long mentionPositive;
+    private Long mentionPositive =0L;
 
     @Column(name = "mention_negative")
-    private Long mentionNegative;
+    private Long mentionNegative =0L;
 
     @Lob
     @Column(name = "summary")
