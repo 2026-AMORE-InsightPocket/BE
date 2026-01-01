@@ -71,5 +71,57 @@ public class LaneigeProductSnapshot extends CreatedEntity {
 
     @Lob
     @Column(name = "customers_say")
-    private String customersSay; // 변경된 날만 저장 (NULL 가능)
+    private String customersSay; // 변경된 날만 저장
+
+    public static LaneigeProductSnapshot create(
+            LaneigeSnapshotRun run,
+            LaneigeProduct product,
+            BigDecimal price
+    ) {
+        LaneigeProductSnapshot s = new LaneigeProductSnapshot();
+        s.snapshotRun = run;
+        s.product = product;
+        s.price = price;
+        return s;
+    }
+
+    public void updateMetrics(
+            Long reviewCount,
+            BigDecimal rating,
+            Integer rating5Pct,
+            Integer rating4Pct,
+            Integer rating3Pct,
+            Integer rating2Pct,
+            Integer rating1Pct,
+            Long lastMonthSales
+    ) {
+        if (reviewCount != null) this.reviewCount = reviewCount;
+        this.rating = rating;
+        this.rating5Pct = rating5Pct;
+        this.rating4Pct = rating4Pct;
+        this.rating3Pct = rating3Pct;
+        this.rating2Pct = rating2Pct;
+        this.rating1Pct = rating1Pct;
+        this.lastMonthSales = lastMonthSales;
+    }
+
+    public void updateRanks(
+            Long rank1,
+            String rank1Category,
+            Long rank2,
+            String rank2Category
+    ) {
+        this.rank1 = rank1;
+        this.rank1Category = rank1Category;
+        this.rank2 = rank2;
+        this.rank2Category = rank2Category;
+    }
+
+    public void updateCustomersSay(String customersSay) {
+        this.customersSay = customersSay;
+    }
+
+    public void updatePrice(BigDecimal price) {
+        this.price = price;
+    }
 }

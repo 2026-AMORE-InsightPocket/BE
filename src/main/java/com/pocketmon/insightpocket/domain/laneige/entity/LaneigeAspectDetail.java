@@ -43,4 +43,26 @@ public class LaneigeAspectDetail extends CreatedEntity {
     @Lob
     @Column(name = "summary")
     private String summary;
+
+    public static LaneigeAspectDetail create(
+            LaneigeProductSnapshot snapshot,
+            String aspectName
+    ) {
+        LaneigeAspectDetail d = new LaneigeAspectDetail();
+        d.productSnapshot = snapshot;
+        d.aspectName = aspectName;
+        return d;
+    }
+
+    public void updateMentions(
+            Long total,
+            Long positive,
+            Long negative,
+            String summary
+    ) {
+        if (total != null) this.mentionTotal = total;
+        if (positive != null) this.mentionPositive = positive;
+        if (negative != null) this.mentionNegative = negative;
+        this.summary = summary;
+    }
 }
