@@ -28,19 +28,41 @@ public class LaneigeAspectDetail extends CreatedEntity {
     @JoinColumn(name = "product_snapshot_id", nullable = false)
     private LaneigeProductSnapshot productSnapshot;
 
-    @Column(name = "aspect_name", length = 200, nullable = false)
+    @Column(name = "aspect_name", length = 200)
     private String aspectName;
 
-    @Column(name = "mention_total", nullable = false)
-    private Long mentionTotal;
+    @Column(name = "mention_total")
+    private Long mentionTotal =0L;
 
-    @Column(name = "mention_positive", nullable = false)
-    private Long mentionPositive;
+    @Column(name = "mention_positive")
+    private Long mentionPositive =0L;
 
-    @Column(name = "mention_negative", nullable = false)
-    private Long mentionNegative;
+    @Column(name = "mention_negative")
+    private Long mentionNegative =0L;
 
     @Lob
     @Column(name = "summary")
     private String summary;
+
+    public static LaneigeAspectDetail create(
+            LaneigeProductSnapshot snapshot,
+            String aspectName
+    ) {
+        LaneigeAspectDetail d = new LaneigeAspectDetail();
+        d.productSnapshot = snapshot;
+        d.aspectName = aspectName;
+        return d;
+    }
+
+    public void updateMentions(
+            Long total,
+            Long positive,
+            Long negative,
+            String summary
+    ) {
+        if (total != null) this.mentionTotal = total;
+        if (positive != null) this.mentionPositive = positive;
+        if (negative != null) this.mentionNegative = negative;
+        this.summary = summary;
+    }
 }

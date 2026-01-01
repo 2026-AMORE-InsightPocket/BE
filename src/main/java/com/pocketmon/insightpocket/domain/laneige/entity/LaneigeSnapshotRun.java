@@ -28,4 +28,10 @@ public class LaneigeSnapshotRun extends CreatedEntity {
 
     @Column(name = "snapshot_time", nullable = false)
     private LocalDateTime snapshotTime;
+
+    public static LaneigeSnapshotRun create(LocalDateTime snapshotTime) {
+        LaneigeSnapshotRun run = new LaneigeSnapshotRun();
+        run.snapshotTime = snapshotTime;
+        return run;
+    }
 }

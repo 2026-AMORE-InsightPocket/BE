@@ -1,4 +1,4 @@
-package com.pocketmon.insightpocket.api.ranking;
+package com.pocketmon.insightpocket.domain.ranking.controller;
 
 import com.pocketmon.insightpocket.domain.ranking.dto.RankingSnapshotIngestRequest;
 import com.pocketmon.insightpocket.domain.ranking.dto.RankingSnapshotIngestResponse;
