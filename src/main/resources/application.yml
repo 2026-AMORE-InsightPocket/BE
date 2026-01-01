@@ -24,4 +24,4 @@ springdoc:
 
 app:
   ingest:
-    api-key: ${INGEST_API_KEY}
+    api-key: ${INGEST_API_KEY:}
