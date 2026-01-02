@@ -1,8 +1,8 @@
-package com.pocketmon.insightpocket.domain.ranking.dto;
+package com.pocketmon.insightpocket.domain.laneige.dto;
 
 import java.math.BigDecimal;
 
-public record LaneigeProductListItem(
+public record LaneigeProductItem(
         long product_id,
         String image_url,
         String product_name,
