@@ -3,7 +3,6 @@ package com.pocketmon.insightpocket.domain.review.repository.projection;
 import java.time.LocalDateTime;
 
 public interface LatestReviewSnapshotRow {
-
     Long getSnapshotId();
     LocalDateTime getSnapshotTime();
 

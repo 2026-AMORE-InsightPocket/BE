@@ -1,24 +1,25 @@
 package com.pocketmon.insightpocket.domain.review.repository;
 
+import com.pocketmon.insightpocket.domain.laneige.entity.LaneigeSnapshotRun;
 import com.pocketmon.insightpocket.domain.review.repository.projection.KeywordInsightRow;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface ReviewAnalysisRepository extends Repository<Object, Long> {
+public interface ReviewAnalysisRepository extends JpaRepository<LaneigeSnapshotRun, Long> {
 
     @Query(value = """
         SELECT
-            a.aspect_name      AS aspectName,
-            a.mention_total    AS mentionTotal,
-            a.mention_positive AS positive,
-            a.mention_negative AS negative,
-            a.summary          AS summary
-        FROM laneige_aspect_details a
-        WHERE a.product_snapshot_id = :productSnapshotId
-        ORDER BY a.mention_total DESC NULLS LAST
+            d.aspect_name   AS aspectName,
+            d.mention_total AS mentionTotal,
+            d.positive      AS positive,
+            d.negative      AS negative,
+            d.summary       AS summary
+        FROM laneige_aspect_details d
+        WHERE d.snapshot_id = :snapshotId
+        ORDER BY d.mention_total DESC
     """, nativeQuery = true)
-    List<KeywordInsightRow> findKeywordInsights(@Param("productSnapshotId") Long productSnapshotId);
+    List<KeywordInsightRow> findKeywordInsights(@Param("snapshotId") Long snapshotId);
 }
