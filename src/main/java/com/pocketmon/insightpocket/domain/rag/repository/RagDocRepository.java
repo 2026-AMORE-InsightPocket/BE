@@ -21,4 +21,14 @@ public interface RagDocRepository extends JpaRepository<RagDoc, String> {
             @Param("code") String code,
             @Param("reportDate") LocalDate reportDate
     );
+
+    @Query("""
+        SELECT r
+        FROM RagDoc r
+        WHERE r.docType.code = :code
+        ORDER BY r.reportDate DESC NULLS LAST, r.createdAt DESC
+    """)
+    List<RagDoc> findLatestByDocTypeCode(
+            @Param("code") String code
+    );
 }
