@@ -9,12 +9,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/reports/today")
+@RequestMapping("/api/reports")
 public class TodayInsightController {
 
     private final TodayInsightService todayInsightService;
 
-    @GetMapping("/latest/insight")
+    @GetMapping("/today/insight")
     public TodayInsightResponse getLatestInsight() {
         return todayInsightService.getLatestInsight();
     }
