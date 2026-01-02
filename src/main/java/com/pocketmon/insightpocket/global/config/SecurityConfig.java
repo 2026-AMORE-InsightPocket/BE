@@ -48,7 +48,13 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOriginPatterns(List.of("https://tenma.store", "https://www.tenma.store"));
+        config.setAllowedOriginPatterns(List.of(
+                "https://tenma.store",
+                "https://www.tenma.store",
+                "http://localhost:3000",
+                "http://localhost:5173",
+                "https://insight-pocket.vercel.app"
+        ));
 
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
