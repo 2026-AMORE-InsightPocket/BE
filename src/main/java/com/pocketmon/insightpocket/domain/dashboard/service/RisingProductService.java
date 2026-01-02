@@ -22,7 +22,7 @@ public class RisingProductService {
 
         return new RisingProductResponse(
                 snapshotTimeStr,
-                result.items()
+                result.items().isEmpty() ? null : result.items().get(0)
         );
     }
 }
