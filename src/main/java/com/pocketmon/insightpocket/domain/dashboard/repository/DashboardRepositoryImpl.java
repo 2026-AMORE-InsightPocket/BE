@@ -22,73 +22,47 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     public RisingResult findRisingProducts() {
 
         String sql = """
-WITH
--- 1) 최신 스냅샷 1개
-latest AS (
-    SELECT snapshot_id, snapshot_time
-    FROM laneige_snapshot_runs
-    ORDER BY snapshot_time DESC
-    FETCH FIRST 1 ROW ONLY
-),
-
--- 2) 바로 이전 스냅샷 1개
-prev AS (
-    SELECT snapshot_id
-    FROM laneige_snapshot_runs
-    WHERE snapshot_time < (SELECT snapshot_time FROM latest)
-    ORDER BY snapshot_time DESC
-    FETCH FIRST 1 ROW ONLY
-),
-
--- 3) 오늘 랭킹 (검증된 로직 그대로)
-today_ranked AS (
-    SELECT
-        DENSE_RANK() OVER (ORDER BY NVL(ps.last_month_sales, 0) DESC) AS today_rank,
-        ps.product_id
-    FROM laneige_product_snapshots ps
-    JOIN latest l ON l.snapshot_id = ps.snapshot_id
-),
-
--- 4) 어제 랭킹 (검증된 로직 그대로)
-yesterday_ranked AS (
-    SELECT
-        DENSE_RANK() OVER (ORDER BY NVL(ps.last_month_sales, 0) DESC) AS yesterday_rank,
-        ps.product_id
-    FROM laneige_product_snapshots ps
-    JOIN prev p ON p.snapshot_id = ps.snapshot_id
-),
-
--- 5) 급상승 계산 (여기서 이미 결과 있음이 콘솔로 증명됨)
-base AS (
-    SELECT
-        t.product_id,
-        t.today_rank,
-        y.yesterday_rank,
-        (y.yesterday_rank - t.today_rank) AS rank_change
-    FROM today_ranked t
-    JOIN yesterday_ranked y
-      ON y.product_id = t.product_id
-    WHERE (y.yesterday_rank - t.today_rank) >= 2
-)
-
--- 6) 최종 응답용 데이터 구성
 SELECT
-    l.snapshot_time,
+    r.snapshot_time,
     p.image_url,
     p.product_name,
     ps.rating,
     ps.review_count,
-    b.rank_change,
-    ROUND(b.rank_change * 100.0 / b.yesterday_rank) || '% 성장' AS growth_rate
-FROM base b
-JOIN latest l ON 1 = 1
-LEFT JOIN laneige_products p
-       ON p.product_id = b.product_id
-LEFT JOIN laneige_product_snapshots ps
-       ON ps.product_id = b.product_id
-      AND ps.snapshot_id = l.snapshot_id
-ORDER BY b.rank_change DESC
-FETCH FIRST 5 ROWS ONLY;
+    r.diff AS rank_change,
+    ROUND(r.diff * 100 / r.yesterday_rank) || '% 성장' AS growth_rate
+FROM (
+    SELECT
+        t.product_id,
+        y.yesterday_rank,
+        t.today_rank,
+        (y.yesterday_rank - t.today_rank) AS diff,
+        l.snapshot_time
+    FROM (
+        SELECT
+            DENSE_RANK() OVER (ORDER BY NVL(last_month_sales, 0) DESC) AS today_rank,
+            product_id
+        FROM laneige_product_snapshots
+        WHERE snapshot_id = 2   -- 🔥 하드코딩
+    ) t
+    JOIN (
+        SELECT
+            DENSE_RANK() OVER (ORDER BY NVL(last_month_sales, 0) DESC) AS yesterday_rank,
+            product_id
+        FROM laneige_product_snapshots
+        WHERE snapshot_id = 1   -- 🔥 하드코딩
+    ) y
+      ON t.product_id = y.product_id
+    JOIN laneige_snapshot_runs l
+      ON l.snapshot_id = 2
+) r
+JOIN laneige_products p
+  ON p.product_id = r.product_id
+JOIN laneige_product_snapshots ps
+  ON ps.product_id = r.product_id
+ AND ps.snapshot_id = 2
+WHERE r.diff >= 2
+ORDER BY r.diff DESC
+FETCH FIRST 1 ROWS ONLY
 """;
 
         List<RisingRow> rows = jdbc.query(sql, Map.of(), (rs, i) -> {
