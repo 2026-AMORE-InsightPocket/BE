@@ -54,10 +54,15 @@ prev_last AS (
 cur_ranked AS (
   SELECT
     cl.snapshot_time AS snapshot_time,
-    DENSE_RANK() OVER (ORDER BY NVL(ps.last_month_sales, 0) DESC, ps.product_id ASC) AS cur_rank,
+    DENSE_RANK() OVER (
+      ORDER BY NVL(ps.last_month_sales, 0) DESC, ps.product_id ASC
+    ) AS cur_rank,
     ps.product_id,
     p.product_name,
-    NVL(ps.last_month_sales, 0) AS last_month_sales
+    p.image_url,
+    NVL(ps.last_month_sales, 0) AS last_month_sales,
+    ps.rating,
+    ps.review_count
   FROM cur_last cl
   JOIN laneige_product_snapshots ps
        ON ps.snapshot_id = cl.snapshot_id
@@ -76,8 +81,11 @@ SELECT
   c.snapshot_time,
   c.cur_rank AS rank,
   c.product_id,
+  c.image_url,
   c.product_name,
   c.last_month_sales,
+  c.rating,
+  c.review_count,
   pr.prev_rank AS prev_month_rank,
   CASE
     WHEN pr.prev_rank IS NULL THEN NULL
@@ -100,8 +108,11 @@ ORDER BY c.cur_rank
                 rs.getTimestamp("snapshot_time"),
                 rs.getInt("rank"),
                 rs.getLong("product_id"),
+                rs.getString("image_url"),
                 rs.getString("product_name"),
                 rs.getLong("last_month_sales"),
+                (BigDecimal) rs.getObject("rating"),
+                (Long) rs.getObject("review_count"),
                 toInteger(rs.getObject("prev_month_rank")),
                 toInteger(rs.getObject("rank_change"))
         ));
@@ -118,8 +129,11 @@ ORDER BY c.cur_rank
                 .map(r -> new BestsellerTop5Item(
                         r.rank(),
                         r.productId(),
+                        r.imageUrl(),
                         r.productName(),
                         r.lastMonthSales(),
+                        r.rating(),
+                        r.reviewCount(),
                         r.prevMonthRank(),
                         r.rankChange()
                 ))
@@ -133,8 +147,11 @@ ORDER BY c.cur_rank
             Timestamp snapshotTime,
             int rank,
             long productId,
+            String imageUrl,
             String productName,
             long lastMonthSales,
+            BigDecimal rating,
+            Long reviewCount,
             Integer prevMonthRank,
             Integer rankChange
     ) {}
