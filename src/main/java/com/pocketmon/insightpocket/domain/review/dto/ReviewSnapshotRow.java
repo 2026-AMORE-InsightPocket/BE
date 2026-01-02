@@ -1,4 +1,4 @@
-package com.pocketmon.insightpocket.domain.review.repository.projection;
+package com.pocketmon.insightpocket.domain.review.dto;
 
 import java.time.LocalDateTime;
 

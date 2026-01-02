@@ -1,10 +1,9 @@
 package com.pocketmon.insightpocket.domain.review.service;
 
 import com.pocketmon.insightpocket.domain.review.dto.ReviewAnalysisResponse;
-import com.pocketmon.insightpocket.domain.review.repository.ReviewAnalysisRepository;
-import com.pocketmon.insightpocket.domain.review.repository.ReviewSnapshotRepository;
-import com.pocketmon.insightpocket.domain.review.repository.projection.KeywordInsightRow;
-import com.pocketmon.insightpocket.domain.review.repository.projection.LatestReviewSnapshotRow;
+import com.pocketmon.insightpocket.domain.review.repository.ReviewAnalysisQueryRepository;
+import com.pocketmon.insightpocket.domain.review.dto.KeywordInsightRow;
+import com.pocketmon.insightpocket.domain.review.dto.LatestReviewSnapshotRow;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,14 +16,14 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class ReviewAnalysisService {
 
-    private final ReviewSnapshotRepository reviewSnapshotRepository;
-    private final ReviewAnalysisRepository reviewAnalysisRepository;
+    private final ReviewAnalysisQueryRepository queryRepository;
 
     public ReviewAnalysisResponse getReviewAnalysis(Long productId) {
-        LatestReviewSnapshotRow snap = reviewSnapshotRepository.findLatestSnapshot(productId)
-                .orElseThrow(() -> new IllegalArgumentException("No snapshot for productId=" + productId));
+        LatestReviewSnapshotRow snap =
+                queryRepository.findLatestSnapshot(productId);
 
-        List<KeywordInsightRow> aspects = reviewAnalysisRepository.findKeywordInsights(snap.getSnapshotId());
+        List<KeywordInsightRow> aspects =
+                queryRepository.findKeywordInsights(snap.getSnapshotId());
 
         // 1) sentiment 계산 (aspect 긍/부 합)
         long posSum = 0L;
