@@ -36,14 +36,12 @@ public class LaneigeProductIngestService {
             return new LaneigeProductIngestResponse(null, 0, 0, 0);
         }
 
-        // 1) snapshot run upsert
         String snapshotTimeStr = requests.get(0).getSnapshotTime();
         LocalDateTime snapshotTime = LocalDateTime.parse(snapshotTimeStr, SNAPSHOT_FORMAT);
 
         LaneigeSnapshotRun run = snapshotRunRepository.findBySnapshotTime(snapshotTime)
                 .orElseGet(() -> snapshotRunRepository.save(LaneigeSnapshotRun.create(snapshotTime)));
 
-        // 2) product_url 일괄 조회로 캐싱
         Set<String> urls = new HashSet<>();
         for (LaneigeProductIngestRequest r : requests) {
             if (r.getProductUrl() != null) urls.add(r.getProductUrl());
@@ -76,20 +74,13 @@ public class LaneigeProductIngestService {
                 productByUrl.put(product.getProductUrl(), product);
                 newProducts++;
             } else {
-                // 기본정보는 항상 최신으로
-                // (null 들어오면 기존값 날아갈 수 있으니, 크롤러가 null 보내는 케이스 있으면 여기서 방어 추가하자)
                 product.updateBasicInfo(r.getProductName(), r.getImageUrl(), r.getStyle());
 
-                // customersSay는 hash 바뀔 때만 갱신
                 String beforeHash = product.getCustomersSayHash();
                 product.updateCustomersSayIfChanged(r.getCustomersSay(), r.getCustomersSayHash());
                 String afterHash = product.getCustomersSayHash();
 
-                // updatedProducts 집계 기준(원하면 더 엄격하게 바꿔도 됨)
                 if (!Objects.equals(beforeHash, afterHash)) productChanged = true;
-
-                // productName/style/imageUrl 변경까지 집계하고 싶으면 비교 로직 추가하면 됨
-                // 지금은 "hash 변경"을 핵심 변경으로 본다
                 if (productChanged) updatedProducts++;
             }
 
@@ -105,45 +96,66 @@ public class LaneigeProductIngestService {
             // price NOT NULL: 항상 업데이트
             ps.updatePrice(r.getPrice());
 
-            // review_count null -> 0 처리
+            // review_count null -> 0
             long reviewCount = (r.getReviewCount() == null) ? 0L : r.getReviewCount();
+
+            // ✅ metrics 업데이트: "별점 퍼센트"는 null 섞이면 덮어쓰기 금지
+            boolean hasAllRatingPcts =
+                    r.getRating5Pct() != null &&
+                            r.getRating4Pct() != null &&
+                            r.getRating3Pct() != null &&
+                            r.getRating2Pct() != null &&
+                            r.getRating1Pct() != null;
+
+            // 퍼센트가 다 있을 때만 그대로 업데이트
+            Integer rating5 = hasAllRatingPcts ? r.getRating5Pct() : null;
+            Integer rating4 = hasAllRatingPcts ? r.getRating4Pct() : null;
+            Integer rating3 = hasAllRatingPcts ? r.getRating3Pct() : null;
+            Integer rating2 = hasAllRatingPcts ? r.getRating2Pct() : null;
+            Integer rating1 = hasAllRatingPcts ? r.getRating1Pct() : null;
 
             ps.updateMetrics(
                     reviewCount,
-                    r.getRating(),
-                    r.getRating5Pct(),
-                    r.getRating4Pct(),
-                    r.getRating3Pct(),
-                    r.getRating2Pct(),
-                    r.getRating1Pct(),
-                    r.getLastMonthSales()
+                    r.getRating(),          // rating은 null이면 엔티티에서 어떻게 처리하는지에 따라(그대로 둠)
+                    rating5,
+                    rating4,
+                    rating3,
+                    rating2,
+                    rating1,
+                    r.getLastMonthSales()   // 이것도 null이면 엔티티에서 덮어쓸 수 있음(원하면 보호 로직 추가 가능)
             );
 
+            // ✅ rank 업데이트: rank 값이 null이면 (값+카테고리) 덮어쓰기 금지
+            Long rank1 = r.getRank1();
+            String rank1Category = r.getRank1Category();
+            Long rank2 = r.getRank2();
+            String rank2Category = r.getRank2Category();
+
+            boolean hasRank1 = (rank1 != null);
+            boolean hasRank2 = (rank2 != null);
+
             ps.updateRanks(
-                    r.getRank1(),
-                    r.getRank1Category(),
-                    r.getRank2(),
-                    r.getRank2Category()
+                    hasRank1 ? rank1 : null,
+                    hasRank1 ? rank1Category : null,
+                    hasRank2 ? rank2 : null,
+                    hasRank2 ? rank2Category : null
             );
 
             ps.updateCustomersSay(r.getCustomersSay());
 
-            // ---- Aspect upsert ----
+            // ---- Aspect upsert ---- (동일)
             if (r.getAspectDetails() != null) {
                 for (LaneigeProductIngestRequest.AspectDetail a : r.getAspectDetails()) {
                     if (a == null) continue;
 
                     String aspectName = a.getAspectName();
-                    if (aspectName == null || aspectName.isBlank()) {
-                        continue;
-                    }
+                    if (aspectName == null || aspectName.isBlank()) continue;
 
                     LaneigeAspectDetail detail = aspectDetailRepository
                             .findByProductSnapshotAndAspectName(ps, aspectName)
-                            .orElseGet(() -> {
-                                LaneigeAspectDetail created = LaneigeAspectDetail.create(ps, aspectName);
-                                return aspectDetailRepository.save(created);
-                            });
+                            .orElseGet(() -> aspectDetailRepository.save(
+                                    LaneigeAspectDetail.create(ps, aspectName)
+                            ));
 
                     detail.updateMentions(
                             a.getMentionTotal(),

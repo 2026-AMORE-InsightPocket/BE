@@ -7,7 +7,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-public interface LaneigeProductRepository extends JpaRepository<LaneigeProduct, Long> {
+public interface LaneigeProductRepository
+        extends JpaRepository<LaneigeProduct, Long>, LaneigeProductRepositoryCustom {
+
     Optional<LaneigeProduct> findByProductUrl(String productUrl);
     List<LaneigeProduct> findAllByProductUrlIn(Collection<String> productUrls);
 }
