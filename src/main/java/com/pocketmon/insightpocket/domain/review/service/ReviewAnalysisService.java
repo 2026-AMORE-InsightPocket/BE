@@ -55,11 +55,11 @@ public class ReviewAnalysisService {
 
         // 3) rating distribution
         List<ReviewAnalysisResponse.RatingDistItem> ratingDist = new ArrayList<>();
-        ratingDist.add(new ReviewAnalysisResponse.RatingDistItem(5, null, toIntOrNull(snap.getRating5Pct())));
-        ratingDist.add(new ReviewAnalysisResponse.RatingDistItem(4, null, toIntOrNull(snap.getRating4Pct())));
-        ratingDist.add(new ReviewAnalysisResponse.RatingDistItem(3, null, toIntOrNull(snap.getRating3Pct())));
-        ratingDist.add(new ReviewAnalysisResponse.RatingDistItem(2, null, toIntOrNull(snap.getRating2Pct())));
-        ratingDist.add(new ReviewAnalysisResponse.RatingDistItem(1, null, toIntOrNull(snap.getRating1Pct())));
+        ratingDist.add(new ReviewAnalysisResponse.RatingDistItem(5, toIntOrNull(snap.getRating5Pct())));
+        ratingDist.add(new ReviewAnalysisResponse.RatingDistItem(4, toIntOrNull(snap.getRating4Pct())));
+        ratingDist.add(new ReviewAnalysisResponse.RatingDistItem(3, toIntOrNull(snap.getRating3Pct())));
+        ratingDist.add(new ReviewAnalysisResponse.RatingDistItem(2, toIntOrNull(snap.getRating2Pct())));
+        ratingDist.add(new ReviewAnalysisResponse.RatingDistItem(1, toIntOrNull(snap.getRating1Pct())));
 
         // 4) keyword insights + 각 키워드 score 계산
         List<ReviewAnalysisResponse.KeywordInsightItem> keywordInsights = new ArrayList<>();

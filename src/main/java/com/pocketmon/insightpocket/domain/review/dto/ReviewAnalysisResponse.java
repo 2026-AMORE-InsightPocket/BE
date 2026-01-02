@@ -43,8 +43,7 @@ public class ReviewAnalysisResponse {
     @Getter @AllArgsConstructor
     public static class RatingDistItem {
         private Integer star;   // 5,4,3,2,1
-        private Long count;     // snapshot에 있으면 count, 없으면 null
-        private Integer pct;    // snapshot의 rating_5_pct ... 있으면 사용
+        private Integer pct;    // snapshot의 rating_5_pct ...
     }
 
     @Getter @AllArgsConstructor
