@@ -7,19 +7,18 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 public interface RagDocRepository extends JpaRepository<RagDoc, String> {
 
     @Query("""
         SELECT r
         FROM RagDoc r
-        WHERE r.docTypeId = :docTypeId
+        WHERE r.docType.code = :code
           AND r.reportDate = :reportDate
         ORDER BY r.createdAt DESC
-        """)
-    List<RagDoc> findDailyReportsByDate(
-            @Param("docTypeId") Long docTypeId,
+    """)
+    List<RagDoc> findDailyReportsByCodeAndDate(
+            @Param("code") String code,
             @Param("reportDate") LocalDate reportDate
     );
 }
