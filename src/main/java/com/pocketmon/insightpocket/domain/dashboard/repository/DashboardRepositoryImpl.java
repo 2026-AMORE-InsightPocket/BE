@@ -104,18 +104,26 @@ ORDER BY c.cur_rank
                 "prev_end", prevMonthEnd
         );
 
-        List<Row> fetched = jdbc.query(sql, params, (rs, i) -> new Row(
-                rs.getTimestamp("snapshot_time"),
-                rs.getInt("rank"),
-                rs.getLong("product_id"),
-                rs.getString("image_url"),
-                rs.getString("product_name"),
-                rs.getLong("last_month_sales"),
-                (BigDecimal) rs.getObject("rating"),
-                (Long) rs.getObject("review_count"),
-                toInteger(rs.getObject("prev_month_rank")),
-                toInteger(rs.getObject("rank_change"))
-        ));
+        List<Row> fetched = jdbc.query(sql, params, (rs, i) -> {
+
+            BigDecimal rating = (BigDecimal) rs.getObject("rating");
+
+            BigDecimal reviewCntBd = (BigDecimal) rs.getObject("review_count");
+            Long reviewCount = (reviewCntBd == null) ? null : reviewCntBd.longValue();
+
+            return new Row(
+                    rs.getTimestamp("snapshot_time"),
+                    rs.getInt("rank"),
+                    rs.getLong("product_id"),
+                    rs.getString("image_url"),
+                    rs.getString("product_name"),
+                    rs.getLong("last_month_sales"),
+                    rating,
+                    reviewCount,
+                    toInteger(rs.getObject("prev_month_rank")),
+                    toInteger(rs.getObject("rank_change"))
+            );
+        });
 
         if (fetched.isEmpty()) {
             return new Top5Result(null, List.of());
