@@ -18,11 +18,13 @@ public class DailyReportService {
 
     private final RagDocRepository ragDocRepository;
 
+    private static final String DAILY_REPORT_CODE = "DAILY_REPORT";
+
     public RagDoc getTodayDailyReport() {
         LocalDate todayKst = LocalDate.now(KST);
 
         return ragDocRepository
-                .findDailyReportsByDate(DAILY_REPORT_TYPE_ID, todayKst)
+                .findDailyReportsByCodeAndDate(DAILY_REPORT_CODE, todayKst)
                 .stream()
                 .findFirst()
                 .orElseThrow(() ->
