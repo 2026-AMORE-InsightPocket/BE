@@ -1,4 +1,8 @@
 package com.pocketmon.insightpocket.domain.dashboard.dto;
 
-public class RisingProductResponse {
-}
+import java.util.List;
+
+public record RisingProductResponse(
+        String snapshot_time,
+        List<RisingProductItem> items
+) {}

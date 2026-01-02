@@ -22,8 +22,8 @@ public class DashboardController {
     private final BestsellerTop1Service bestsellerTop1Service;
 
     @GetMapping("/rising")
-    public RisingProductResponse getRisingProducts(@RequestParam String date) {
-        return risingProductService.getRisingProducts(date);
+    public RisingProductResponse getRisingProducts() {
+        return risingProductService.getRisingProducts();
     }
 
     @GetMapping("/bestsellers/top5")
