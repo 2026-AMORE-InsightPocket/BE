@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 @Getter
 @AllArgsConstructor
 public class LatestReviewSnapshotRow {
+    private Long productSnapshotId;
     private Long snapshotId;
     private LocalDateTime snapshotTime;
     private Long reviewCount;

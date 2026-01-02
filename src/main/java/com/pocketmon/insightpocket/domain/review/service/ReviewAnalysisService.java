@@ -23,7 +23,7 @@ public class ReviewAnalysisService {
                 queryRepository.findLatestSnapshot(productId);
 
         List<KeywordInsightRow> aspects =
-                queryRepository.findKeywordInsights(snap.getSnapshotId());
+                queryRepository.findKeywordInsights(snap.getProductSnapshotId());
 
         // 1) sentiment 계산 (aspect 긍/부 합)
         long posSum = 0L;
