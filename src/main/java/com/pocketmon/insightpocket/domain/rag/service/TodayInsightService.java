@@ -17,9 +17,8 @@ public class TodayInsightService {
     private final RagDocRepository ragDocRepository;
 
     public TodayInsightResponse getLatestInsight() {
-        RagDoc doc = ragDocRepository.findLatestByDocTypeCode(DAILY_REPORT_CODE)
-                .stream()
-                .findFirst()
+        RagDoc doc = ragDocRepository
+                .findLatestOneByDocTypeCode(DAILY_REPORT_CODE)
                 .orElseThrow(() -> new NoSuchElementException("데일리 리포트가 없습니다."));
 
         String insight = extractInsightContent(doc.getBodyMd());

@@ -23,7 +23,7 @@ public class DailyReportController {
 
     @GetMapping("/today/download")
     public ResponseEntity<Resource> downloadToday() {
-        RagDoc doc = dailyReportService.getTodayDailyReport();
+        RagDoc doc = dailyReportService.getLatestDailyReport();
 
         String filename = doc.getDocId() + ".md";
         byte[] content = doc.getBodyMd().getBytes(StandardCharsets.UTF_8);
