@@ -18,7 +18,7 @@ public class TodayInsightService {
 
     public TodayInsightResponse getLatestInsight() {
         RagDoc doc = ragDocRepository
-                .findLatestOneByDocTypeCode(DAILY_REPORT_CODE)
+                .findTopByDocType_CodeOrderByReportDateDescCreatedAtDesc(DAILY_REPORT_CODE)
                 .orElseThrow(() -> new NoSuchElementException("데일리 리포트가 없습니다."));
 
         String insight = extractInsightContent(doc.getBodyMd());
@@ -30,6 +30,7 @@ public class TodayInsightService {
         );
     }
 
+    // extractInsightContent는 기존 그대로
     private String extractInsightContent(String md) {
         if (md == null) return "";
 
@@ -39,19 +40,16 @@ public class TodayInsightService {
             String trimmed = line.trim();
             if (trimmed.isEmpty()) continue;
 
-            // "**오늘의 인사이트:**" 뒤만 잘라내기
             String marker = "**오늘의 인사이트:**";
             if (trimmed.startsWith(marker)) {
                 return trimmed.substring(marker.length()).trim();
             }
 
-            // 혹시 마크다운 없이 저장된 경우 대비
             String plainMarker = "오늘의 인사이트:";
             if (trimmed.startsWith(plainMarker)) {
                 return trimmed.substring(plainMarker.length()).trim();
             }
 
-            // fallback: 그냥 첫 문장
             return trimmed;
         }
 

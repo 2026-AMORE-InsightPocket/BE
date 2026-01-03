@@ -25,7 +25,8 @@ public class DailyReportController {
     public ResponseEntity<Resource> downloadToday() {
         RagDoc doc = dailyReportService.getLatestDailyReport();
 
-        String filename = doc.getDocId() + ".md";
+        String date = doc.getCreatedAt().toLocalDate().toString();
+        String filename = "daily_report_" + date + ".md";
         byte[] content = doc.getBodyMd().getBytes(StandardCharsets.UTF_8);
 
         ByteArrayResource resource = new ByteArrayResource(content);

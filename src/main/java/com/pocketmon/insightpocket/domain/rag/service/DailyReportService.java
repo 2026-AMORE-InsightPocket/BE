@@ -17,9 +17,7 @@ public class DailyReportService {
 
     public RagDoc getLatestDailyReport() {
         return ragDocRepository
-                .findLatestOneByDocTypeCode(DAILY_REPORT_CODE)
-                .orElseThrow(() ->
-                        new NoSuchElementException("데일리 리포트가 없습니다.")
-                );
+                .findTopByDocType_CodeOrderByReportDateDescCreatedAtDesc(DAILY_REPORT_CODE)
+                .orElseThrow(() -> new NoSuchElementException("데일리 리포트가 없습니다."));
     }
 }
