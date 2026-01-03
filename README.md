@@ -40,9 +40,9 @@
 - 기간별 랭킹 히스토리 제공
 
 🧠 **Review Analysis Support**
-- 리뷰 요약(Customers Say) 조회
+- 리뷰 요약(`Customers Say`) 조회
 - 평점 분포 / 감정 비율 계산
-- product_snapshot_id 기준 키워드 분석
+- `product_snapshot_id` 기준 키워드 분석
 - 최신 스냅샷 기준 분석 보장
 
 📚 **RAG Data Provider**
