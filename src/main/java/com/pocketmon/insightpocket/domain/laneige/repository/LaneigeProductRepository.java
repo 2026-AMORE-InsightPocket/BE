@@ -10,6 +10,5 @@ import java.util.Optional;
 public interface LaneigeProductRepository
         extends JpaRepository<LaneigeProduct, Long>, LaneigeProductRepositoryCustom {
 
-    Optional<LaneigeProduct> findByProductUrl(String productUrl);
     List<LaneigeProduct> findAllByProductUrlIn(Collection<String> productUrls);
 }
