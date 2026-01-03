@@ -1,6 +1,7 @@
 package com.pocketmon.insightpocket.domain.laneige.service;
 
 import com.pocketmon.insightpocket.domain.laneige.dto.RankTrendResponse;
+import com.pocketmon.insightpocket.domain.laneige.entity.LaneigeProduct;
 import com.pocketmon.insightpocket.domain.laneige.enums.RankRange;
 import com.pocketmon.insightpocket.domain.laneige.repository.LaneigeProductRepository;
 import com.pocketmon.insightpocket.domain.laneige.repository.LaneigeRankTrendRepository;
@@ -28,12 +29,19 @@ import java.util.*;
 public class LaneigeRankTrendService {
 
     private final LaneigeRankTrendRepository laneigeRankTrendRepository;
+    private final LaneigeProductRepository laneigeProductRepository;
 
     private static final ZoneId KST = ZoneId.of("Asia/Seoul");
     private static final DateTimeFormatter DAY_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final DateTimeFormatter MONTH_FMT = DateTimeFormatter.ofPattern("yyyy-MM");
 
     public RankTrendResponse getRankTrends(Long productId, RankRange range) {
+        LaneigeProduct product = laneigeProductRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 productId 입니다. productId=" + productId));
+
+        String productName = product.getProductName();
+        String style = product.getStyle();
+
         // 기준 시각(서버가 UTC여도 KST 기준으로 버킷 끊기 위해 ZonedDateTime 사용)
         ZonedDateTime nowKst = ZonedDateTime.now(KST);
         LocalDate today = nowKst.toLocalDate();
@@ -47,7 +55,7 @@ public class LaneigeRankTrendService {
                     laneigeRankTrendRepository.findRankTrends(productId, startTime, endTime);
 
             List<RankTrendResponse.RankTrendItem> items = buildDailyItems(startDay, today, rows);
-            return new RankTrendResponse(productId, range, items);
+            return new RankTrendResponse(productId, productName, style, range, items);
         }
 
         if (range == RankRange.MONTH) {
@@ -59,7 +67,7 @@ public class LaneigeRankTrendService {
                     laneigeRankTrendRepository.findRankTrends(productId, startTime, endTime);
 
             List<RankTrendResponse.RankTrendItem> items = buildDailyItems(startDay, today, rows);
-            return new RankTrendResponse(productId, range, items);
+            return new RankTrendResponse(productId, productName, style, range, items);
         }
 
         // YEAR
@@ -73,7 +81,7 @@ public class LaneigeRankTrendService {
                 laneigeRankTrendRepository.findRankTrends(productId, startTime, endTime);
 
         List<RankTrendResponse.RankTrendItem> items = buildMonthlyItems(startMonth, thisMonth, rows);
-        return new RankTrendResponse(productId, range, items);
+        return new RankTrendResponse(productId, productName, style, range, items);
     }
 
     /**

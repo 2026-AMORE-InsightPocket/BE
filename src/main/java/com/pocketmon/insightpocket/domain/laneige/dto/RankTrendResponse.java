@@ -14,6 +14,8 @@ import java.util.List;
 public class RankTrendResponse {
 
     private Long productId;
+    private String productName;
+    private String style;
     private RankRange range;
 
     /**
