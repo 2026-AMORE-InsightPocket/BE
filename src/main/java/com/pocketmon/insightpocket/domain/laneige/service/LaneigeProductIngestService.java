@@ -93,13 +93,15 @@ public class LaneigeProductIngestService {
                             LaneigeProductSnapshot.create(run, finalProduct, r.getPrice())
                     ));
 
-            // price NOT NULL: 항상 업데이트
-            ps.updatePrice(r.getPrice());
+            // price가 있을 때만 업데이트
+            if (r.getPrice() != null) {
+                ps.updatePrice(r.getPrice());
+            }
 
             // review_count null -> 0
             long reviewCount = (r.getReviewCount() == null) ? 0L : r.getReviewCount();
 
-            // ✅ metrics 업데이트: "별점 퍼센트"는 null 섞이면 덮어쓰기 금지
+            // metrics 업데이트: "별점 퍼센트"는 null 섞이면 덮어쓰기 금지
             boolean hasAllRatingPcts =
                     r.getRating5Pct() != null &&
                             r.getRating4Pct() != null &&
@@ -125,7 +127,7 @@ public class LaneigeProductIngestService {
                     r.getLastMonthSales()   // 이것도 null이면 엔티티에서 덮어쓸 수 있음(원하면 보호 로직 추가 가능)
             );
 
-            // ✅ rank 업데이트: rank 값이 null이면 (값+카테고리) 덮어쓰기 금지
+            // rank 업데이트: rank 값이 null이면 (값+카테고리) 덮어쓰기 금지
             Long rank1 = r.getRank1();
             String rank1Category = r.getRank1Category();
             Long rank2 = r.getRank2();
