@@ -27,7 +27,6 @@ public class LaneigeProductIngestRequest {
     private String imageUrl;
     private String style;
 
-    @NotNull
     private BigDecimal price;
 
     private Long reviewCount;

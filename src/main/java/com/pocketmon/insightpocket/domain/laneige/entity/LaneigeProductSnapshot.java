@@ -34,7 +34,7 @@ public class LaneigeProductSnapshot extends CreatedEntity {
     @JoinColumn(name = "product_id", nullable = false)
     private LaneigeProduct product;
 
-    @Column(name = "price", precision = 10, scale = 2, nullable = false)
+    @Column(name = "price", precision = 10, scale = 2)
     private BigDecimal price;
 
     @Column(name = "review_count", nullable = false)
