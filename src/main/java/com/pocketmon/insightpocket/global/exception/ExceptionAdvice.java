@@ -24,10 +24,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-
 @Slf4j
-@RestControllerAdvice(annotations = {RestController.class})
-public class ExceptionAdvice extends ResponseEntityExceptionHandler {
+@RestControllerAdvice(annotations = RestController.class)
+public class ExceptionAdvice {
 
     private final List<DataIntegrityMapper> dataIntegrityMappers;
 
@@ -37,76 +36,52 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
 
     // @RequestParam, @PathVariable 등 Bean Validation 실패
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<Object> handleConstraintViolation(ConstraintViolationException e, WebRequest request) {
+    public ResponseEntity<ApiResponse<Object>> handleConstraintViolation(ConstraintViolationException e) {
         String message = e.getConstraintViolations().stream()
-                .map(violation -> violation.getMessage())
+                .map(v -> v.getMessage())
                 .findFirst()
                 .orElse("잘못된 요청입니다.");
 
-        ApiResponse<Object> body = ApiResponse.onFailure(
-                ErrorCode.VALIDATION_FAILED,
-                message
-        );
-        return handleExceptionInternal(e, body, new HttpHeaders(),
-                ErrorCode.VALIDATION_FAILED.getHttpStatus(),
-                request);
+        return ResponseEntity
+                .status(ErrorCode.VALIDATION_FAILED.getHttpStatus())
+                .body(ApiResponse.onFailure(ErrorCode.VALIDATION_FAILED, message));
     }
 
     // @Valid @RequestBody DTO 검증 실패
-    @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException e,
-                                                                  HttpHeaders headers,
-                                                                  HttpStatusCode status,
-                                                                  WebRequest request) {
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiResponse<Object>> handleMethodArgumentNotValid(MethodArgumentNotValidException e) {
         Map<String, String> errors = new LinkedHashMap<>();
-        e.getBindingResult().getFieldErrors().forEach(fieldError -> {
-            String field = fieldError.getField();
-            String msg = Optional.ofNullable(fieldError.getDefaultMessage()).orElse("");
-            errors.merge(field, msg, (a, b) -> a + ", " + b);
+        e.getBindingResult().getFieldErrors().forEach(fe -> {
+            String msg = Optional.ofNullable(fe.getDefaultMessage()).orElse("");
+            errors.merge(fe.getField(), msg, (a, b) -> a + ", " + b);
         });
 
-        ApiResponse<Object> body = ApiResponse.onFailure(
-                ErrorCode.VALIDATION_FAILED,
-                errors
-        );
-        return handleExceptionInternal(e, body, headers,
-                ErrorCode.VALIDATION_FAILED.getHttpStatus(),
-                request);
+        return ResponseEntity
+                .status(ErrorCode.VALIDATION_FAILED.getHttpStatus())
+                .body(ApiResponse.onFailure(ErrorCode.VALIDATION_FAILED, errors));
     }
 
     // @RequestBody JSON 파싱 실패
-    @Override
-    protected ResponseEntity<Object> handleHttpMessageNotReadable(
-            HttpMessageNotReadableException e,
-            HttpHeaders headers,
-            HttpStatusCode status,
-            WebRequest request
-    ) {
-        ApiResponse<Object> body = ApiResponse.onFailure(ErrorCode.JSON_PARSE_ERROR, null);
-        return handleExceptionInternal(e, body, headers, ErrorCode.JSON_PARSE_ERROR.getHttpStatus(), request);
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiResponse<Object>> handleHttpMessageNotReadable(HttpMessageNotReadableException e) {
+        return ResponseEntity
+                .status(ErrorCode.JSON_PARSE_ERROR.getHttpStatus())
+                .body(ApiResponse.onFailure(ErrorCode.JSON_PARSE_ERROR, null));
     }
 
     // 도메인 CustomException
     @ExceptionHandler(CustomException.class)
-    public ResponseEntity<Object> handleCustomException(CustomException e, HttpServletRequest request) {
-        ApiResponse<Object> body = ApiResponse.onFailure(e.getErrorCode(), e.getMessage());
-
-        WebRequest webRequest = new ServletWebRequest(request);
-        return handleExceptionInternal(e, body, new HttpHeaders(),
-                e.getErrorCode().getHttpStatus(),
-                webRequest);
+    public ResponseEntity<ApiResponse<Object>> handleCustomException(CustomException e) {
+        return ResponseEntity
+                .status(e.getErrorCode().getHttpStatus())
+                .body(ApiResponse.onFailure(e.getErrorCode(), e.getMessage()));
     }
 
     // 데이터 무결성 제약 조건 핸들러
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<Object> handleDataIntegrityViolation(
-            DataIntegrityViolationException e,
-            WebRequest request
-    ) {
+    public ResponseEntity<ApiResponse<Object>> handleDataIntegrityViolation(DataIntegrityViolationException e) {
         // 기본은 메시지
-        String key = Optional.ofNullable(e.getMostSpecificCause())
-                .map(Throwable::getMessage)
-                .orElse("");
+        String key = Optional.ofNullable(e.getMostSpecificCause()).map(Throwable::getMessage).orElse("");
 
         // 원인 체인을 끝까지 훑어서 constraint name 우선 추출
         Throwable t = e;
@@ -124,26 +99,24 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
         for (DataIntegrityMapper mapper : dataIntegrityMappers) {
             if (mapper.supports(key)) {
                 BaseCode code = mapper.errorCode();
-                ApiResponse<Object> body = ApiResponse.onFailure(code, null);
-                return handleExceptionInternal(e, body, new HttpHeaders(), code.getHttpStatus(), request);
+                return ResponseEntity
+                        .status(code.getHttpStatus())
+                        .body(ApiResponse.onFailure(code, null));
             }
         }
 
         // 매핑 못한 경우 (공통 fallback)
-        ApiResponse<Object> body = ApiResponse.onFailure(ErrorCode.DATA_INTEGRITY_VIOLATION, null);
-        return handleExceptionInternal(
-                e, body, new HttpHeaders(),
-                ErrorCode.DATA_INTEGRITY_VIOLATION.getHttpStatus(),
-                request
-        );
+        return ResponseEntity
+                .status(ErrorCode.DATA_INTEGRITY_VIOLATION.getHttpStatus())
+                .body(ApiResponse.onFailure(ErrorCode.DATA_INTEGRITY_VIOLATION, null));
     }
 
     // 모든 미처리 예외
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Object> handleUnknownException(Exception e, WebRequest request) {
-        log.error("Unhandled exception", e); // printStackTrace() 지양
-        ApiResponse<Object> body = ApiResponse.onFailure(ErrorCode.INTERNAL_SERVER_ERROR, null);
-        return handleExceptionInternal(e, body, new HttpHeaders(),
-                ErrorCode.INTERNAL_SERVER_ERROR.getHttpStatus(), request);
+    public ResponseEntity<ApiResponse<Object>> handleUnknownException(Exception e) {
+        log.error("Unhandled exception", e);
+        return ResponseEntity
+                .status(ErrorCode.INTERNAL_SERVER_ERROR.getHttpStatus())
+                .body(ApiResponse.onFailure(ErrorCode.INTERNAL_SERVER_ERROR, null));
     }
 }
