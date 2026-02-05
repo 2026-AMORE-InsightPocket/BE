@@ -4,6 +4,8 @@ import com.pocketmon.insightpocket.domain.review.dto.ReviewAnalysisResponse;
 import com.pocketmon.insightpocket.domain.review.repository.ReviewAnalysisQueryRepository;
 import com.pocketmon.insightpocket.domain.review.dto.KeywordInsightRow;
 import com.pocketmon.insightpocket.domain.review.dto.LatestReviewSnapshotRow;
+import com.pocketmon.insightpocket.global.exception.CustomException;
+import com.pocketmon.insightpocket.global.response.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,13 +21,18 @@ public class ReviewAnalysisService {
     private final ReviewAnalysisQueryRepository queryRepository;
 
     public ReviewAnalysisResponse getReviewAnalysis(Long productId) {
+        // 최신 스냅샷 불러오기
         LatestReviewSnapshotRow snap =
                 queryRepository.findLatestSnapshot(productId);
+
+        if (snap == null) {
+            throw new CustomException(ErrorCode.REVIEW_NOT_FOUND);
+        }
 
         List<KeywordInsightRow> aspects =
                 queryRepository.findKeywordInsights(snap.getProductSnapshotId());
 
-        // 1) sentiment 계산 (aspect 긍/부 합)
+        // 전체 리뷰 감정 비율 계산
         long posSum = 0L;
         long negSum = 0L;
         for (KeywordInsightRow a : aspects) {
@@ -41,9 +48,7 @@ public class ReviewAnalysisService {
             negativePct = 100 - positivePct;
         }
 
-        // 2) reputation score 계산
-        // - aspect 기반 긍정비율이 있으면 그걸 사용
-        // - 없으면 rating(0~5)을 0~100으로 환산
+        // 평판 점수 계산
         int score;
         if (denom > 0) {
             score = clamp(positivePct, 0, 100);
@@ -53,15 +58,16 @@ public class ReviewAnalysisService {
             score = 0;
         }
 
-        // 3) rating distribution
-        List<ReviewAnalysisResponse.RatingDistItem> ratingDist = new ArrayList<>();
-        ratingDist.add(new ReviewAnalysisResponse.RatingDistItem(5, toIntOrNull(snap.getRating5Pct())));
-        ratingDist.add(new ReviewAnalysisResponse.RatingDistItem(4, toIntOrNull(snap.getRating4Pct())));
-        ratingDist.add(new ReviewAnalysisResponse.RatingDistItem(3, toIntOrNull(snap.getRating3Pct())));
-        ratingDist.add(new ReviewAnalysisResponse.RatingDistItem(2, toIntOrNull(snap.getRating2Pct())));
-        ratingDist.add(new ReviewAnalysisResponse.RatingDistItem(1, toIntOrNull(snap.getRating1Pct())));
+        // 별점
+        List<ReviewAnalysisResponse.RatingDistItem> ratingDist = List.of(
+                new ReviewAnalysisResponse.RatingDistItem(5, toIntOrNull(snap.getRating5Pct())),
+                new ReviewAnalysisResponse.RatingDistItem(4, toIntOrNull(snap.getRating4Pct())),
+                new ReviewAnalysisResponse.RatingDistItem(3, toIntOrNull(snap.getRating3Pct())),
+                new ReviewAnalysisResponse.RatingDistItem(2, toIntOrNull(snap.getRating2Pct())),
+                new ReviewAnalysisResponse.RatingDistItem(1, toIntOrNull(snap.getRating1Pct()))
+        );
 
-        // 4) keyword insights + 각 키워드 score 계산
+        // 키워드 인사이트
         List<ReviewAnalysisResponse.KeywordInsightItem> keywordInsights = new ArrayList<>();
         for (KeywordInsightRow a : aspects) {
             long p = nvl(a.getPositive());

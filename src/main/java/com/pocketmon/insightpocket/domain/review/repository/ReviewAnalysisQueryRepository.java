@@ -38,26 +38,29 @@ public class ReviewAnalysisQueryRepository {
         WHERE p.product_id = ?
         ORDER BY r.snapshot_time DESC
         FETCH FIRST 1 ROWS ONLY
-    """;
+        """;
 
-        return jdbcTemplate.queryForObject(sql, new Object[]{productId},
-                (rs, i) -> new LatestReviewSnapshotRow(
-                        rs.getLong("productSnapshotId"),
-                        rs.getLong("snapshotId"),
-                        rs.getTimestamp("snapshotTime").toLocalDateTime(),
-                        rs.getLong("reviewCount"),
-                        rs.getObject("rating") == null ? null : rs.getDouble("rating"),
-                        rs.getString("customersSayHighlight"),
-                        rs.getObject("rating5Pct") == null ? null : rs.getLong("rating5Pct"),
-                        rs.getObject("rating4Pct") == null ? null : rs.getLong("rating4Pct"),
-                        rs.getObject("rating3Pct") == null ? null : rs.getLong("rating3Pct"),
-                        rs.getObject("rating2Pct") == null ? null : rs.getLong("rating2Pct"),
-                        rs.getObject("rating1Pct") == null ? null : rs.getLong("rating1Pct"),
-                        rs.getString("customersSayCurrent"),
-                        rs.getTimestamp("customersSayUpdatedAt") == null
-                                ? null
-                                : rs.getTimestamp("customersSayUpdatedAt").toLocalDateTime()
-                ));
+        List<LatestReviewSnapshotRow> list =
+                jdbcTemplate.query(sql, new Object[]{productId},
+                        (rs, i) -> new LatestReviewSnapshotRow(
+                                rs.getLong("productSnapshotId"),
+                                rs.getLong("snapshotId"),
+                                rs.getTimestamp("snapshotTime").toLocalDateTime(),
+                                rs.getLong("reviewCount"),
+                                rs.getObject("rating") == null ? null : rs.getDouble("rating"),
+                                rs.getString("customersSayHighlight"),
+                                rs.getObject("rating5Pct") == null ? null : rs.getLong("rating5Pct"),
+                                rs.getObject("rating4Pct") == null ? null : rs.getLong("rating4Pct"),
+                                rs.getObject("rating3Pct") == null ? null : rs.getLong("rating3Pct"),
+                                rs.getObject("rating2Pct") == null ? null : rs.getLong("rating2Pct"),
+                                rs.getObject("rating1Pct") == null ? null : rs.getLong("rating1Pct"),
+                                rs.getString("customersSayCurrent"),
+                                rs.getTimestamp("customersSayUpdatedAt") == null
+                                        ? null
+                                        : rs.getTimestamp("customersSayUpdatedAt").toLocalDateTime()
+                        ));
+
+        return list.isEmpty() ? null : list.get(0);
     }
 
     public List<KeywordInsightRow> findKeywordInsights(Long snapshotId) {

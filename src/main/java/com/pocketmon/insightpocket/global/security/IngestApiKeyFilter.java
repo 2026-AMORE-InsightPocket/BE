@@ -59,4 +59,15 @@ public class IngestApiKeyFilter extends OncePerRequestFilter {
     private boolean safeEquals(String a, String b) {
         return MessageDigest.isEqual(a.getBytes(StandardCharsets.UTF_8), b.getBytes(StandardCharsets.UTF_8));
     }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String uri = request.getRequestURI();
+        String method = request.getMethod();
+
+        if ("OPTIONS".equalsIgnoreCase(method)) return true;  // preflight
+        if (!"POST".equalsIgnoreCase(method)) return true;    // POST만 검사
+
+        return !(uri.startsWith("/api/") && uri.endsWith("/ingest"));
+    }
 }
