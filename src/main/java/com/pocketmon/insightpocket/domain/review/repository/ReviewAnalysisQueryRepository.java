@@ -16,27 +16,30 @@ public class ReviewAnalysisQueryRepository {
 
     public LatestReviewSnapshotRow findLatestSnapshot(Long productId) {
         String sql = """
-        SELECT
-            p.product_snapshot_id        AS productSnapshotId,
-            p.snapshot_id                AS snapshotId,
-            r.snapshot_time              AS snapshotTime,
-            p.review_count               AS reviewCount,
-            p.rating                     AS rating,
-            pr.customers_say             AS customersSayHighlight,
-            p.rating_5_pct               AS rating5Pct,
-            p.rating_4_pct               AS rating4Pct,
-            p.rating_3_pct               AS rating3Pct,
-            p.rating_2_pct               AS rating2Pct,
-            p.rating_1_pct               AS rating1Pct,
-            pr.customers_say_current     AS customersSayCurrent,
-            pr.customers_say_updated_at  AS customersSayUpdatedAt
-        FROM laneige_product_snapshots p
-        JOIN laneige_snapshot_runs r
-          ON r.snapshot_id = p.snapshot_id
-        JOIN laneige_products pr
-          ON pr.product_id = p.product_id
-        WHERE p.product_id = ?
-        ORDER BY r.snapshot_time DESC
+        
+                SELECT *
+        FROM (
+            SELECT
+                p.product_snapshot_id        AS productSnapshotId,
+                p.snapshot_id                AS snapshotId,
+                r.snapshot_time              AS snapshotTime,
+                p.review_count               AS reviewCount,
+                p.rating                     AS rating,
+                p.customers_say              AS customersSayHighlight,
+                p.rating_5_pct               AS rating5Pct,
+                p.rating_4_pct               AS rating4Pct,
+                p.rating_3_pct               AS rating3Pct,
+                p.rating_2_pct               AS rating2Pct,
+                p.rating_1_pct               AS rating1Pct,
+                pr.customers_say_current     AS customersSayCurrent,
+                pr.customers_say_updated_at  AS customersSayUpdatedAt
+            FROM laneige_product_snapshots p
+            JOIN laneige_snapshot_runs r ON r.snapshot_id = p.snapshot_id
+            JOIN laneige_products pr ON pr.product_id = p.product_id
+            WHERE p.product_id = ?
+            ORDER BY r.snapshot_time DESC
+        )
+        WHERE customersSayHighlight IS NOT NULL
         FETCH FIRST 1 ROWS ONLY
         """;
 

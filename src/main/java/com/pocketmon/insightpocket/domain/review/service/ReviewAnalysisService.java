@@ -26,7 +26,7 @@ public class ReviewAnalysisService {
                 queryRepository.findLatestSnapshot(productId);
 
         if (snap == null) {
-            throw new CustomException(ErrorCode.REVIEW_NOT_FOUND);
+            throw new CustomException(ErrorCode.REVIEW_SNAPSHOT_NOT_FOUND);
         }
 
         List<KeywordInsightRow> aspects =
