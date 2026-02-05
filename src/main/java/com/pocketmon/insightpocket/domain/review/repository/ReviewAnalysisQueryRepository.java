@@ -22,7 +22,7 @@ public class ReviewAnalysisQueryRepository {
             r.snapshot_time              AS snapshotTime,
             p.review_count               AS reviewCount,
             p.rating                     AS rating,
-            p.customers_say              AS customersSayHighlight,
+            pr.customers_say             AS customersSayHighlight,
             p.rating_5_pct               AS rating5Pct,
             p.rating_4_pct               AS rating4Pct,
             p.rating_3_pct               AS rating3Pct,
