@@ -11,6 +11,7 @@ public class FilterConfig {
     public FilterRegistrationBean<IngestApiKeyFilter> ingestApiKeyFilterRegistration(IngestApiKeyFilter filter) {
         FilterRegistrationBean<IngestApiKeyFilter> reg = new FilterRegistrationBean<>();
         reg.setFilter(filter);
+        reg.addUrlPatterns("/api/*");
         reg.setOrder(0);
         return reg;
     }

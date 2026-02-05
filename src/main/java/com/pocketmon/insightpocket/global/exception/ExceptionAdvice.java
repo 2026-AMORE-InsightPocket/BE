@@ -75,12 +75,15 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
     }
 
     // @RequestBody JSON 파싱 실패
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException e, WebRequest request) {
+    @Override
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(
+            HttpMessageNotReadableException e,
+            HttpHeaders headers,
+            HttpStatusCode status,
+            WebRequest request
+    ) {
         ApiResponse<Object> body = ApiResponse.onFailure(ErrorCode.JSON_PARSE_ERROR, null);
-        return handleExceptionInternal(e, body, new HttpHeaders(),
-                ErrorCode.JSON_PARSE_ERROR.getHttpStatus(),
-                request);
+        return handleExceptionInternal(e, body, headers, ErrorCode.JSON_PARSE_ERROR.getHttpStatus(), request);
     }
 
     // 도메인 CustomException
