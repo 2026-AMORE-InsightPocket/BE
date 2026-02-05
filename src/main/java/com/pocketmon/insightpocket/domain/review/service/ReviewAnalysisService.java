@@ -32,7 +32,7 @@ public class ReviewAnalysisService {
         List<KeywordInsightRow> aspects =
                 queryRepository.findKeywordInsights(snap.getProductSnapshotId());
 
-        // 전체 리뷰 감정 비율 계산
+        // 긍·부정 감성 비율 계산
         long posSum = 0L;
         long negSum = 0L;
         for (KeywordInsightRow a : aspects) {
@@ -58,7 +58,7 @@ public class ReviewAnalysisService {
             score = 0;
         }
 
-        // 별점
+        // 별점 분포
         List<ReviewAnalysisResponse.RatingDistItem> ratingDist = List.of(
                 new ReviewAnalysisResponse.RatingDistItem(5, toIntOrNull(snap.getRating5Pct())),
                 new ReviewAnalysisResponse.RatingDistItem(4, toIntOrNull(snap.getRating4Pct())),
@@ -67,7 +67,7 @@ public class ReviewAnalysisService {
                 new ReviewAnalysisResponse.RatingDistItem(1, toIntOrNull(snap.getRating1Pct()))
         );
 
-        // 키워드 인사이트
+        // 키워드 기반 인사이트
         List<ReviewAnalysisResponse.KeywordInsightItem> keywordInsights = new ArrayList<>();
         for (KeywordInsightRow a : aspects) {
             long p = nvl(a.getPositive());
