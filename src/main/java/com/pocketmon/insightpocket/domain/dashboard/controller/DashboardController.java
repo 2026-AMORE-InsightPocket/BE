@@ -6,6 +6,8 @@ import com.pocketmon.insightpocket.domain.dashboard.dto.RisingProductResponse;
 import com.pocketmon.insightpocket.domain.dashboard.service.BestsellerTop1Service;
 import com.pocketmon.insightpocket.domain.dashboard.service.BestsellerTop5Service;
 import com.pocketmon.insightpocket.domain.dashboard.service.RisingProductService;
+import com.pocketmon.insightpocket.global.response.ApiResponse;
+import com.pocketmon.insightpocket.global.response.SuccessCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,17 +24,30 @@ public class DashboardController {
     private final BestsellerTop1Service bestsellerTop1Service;
 
     @GetMapping("/rising")
-    public RisingProductResponse getRisingProducts() {
-        return risingProductService.getRisingProducts();
+    public ApiResponse<RisingProductResponse> getRisingProducts() {
+        return ApiResponse.onSuccess(
+                risingProductService.getRisingProducts(),
+                SuccessCode.OK
+        );
     }
 
     @GetMapping("/bestsellers/top5")
-    public BestsellerTop5Response top5(@RequestParam String month) {
-        return bestsellerTop5Service.getLaneigeTop5(month);
+    public ApiResponse<BestsellerTop5Response> top5(
+            @RequestParam String month
+    ) {
+        return ApiResponse.onSuccess(
+                bestsellerTop5Service.getLaneigeTop5(month),
+                SuccessCode.OK
+        );
     }
 
     @GetMapping("/bestsellers/top1")
-    public BestsellerTop1Response top1(@RequestParam String month) {
-        return bestsellerTop1Service.getLastMonthWinner(month);
+    public ApiResponse<BestsellerTop1Response> top1(
+            @RequestParam String month
+    ) {
+        return ApiResponse.onSuccess(
+                bestsellerTop1Service.getLastMonthWinner(month),
+                SuccessCode.OK
+        );
     }
 }
