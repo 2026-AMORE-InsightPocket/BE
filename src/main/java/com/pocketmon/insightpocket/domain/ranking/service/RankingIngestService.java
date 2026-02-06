@@ -24,9 +24,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RankingIngestService {
 
-    private static final DateTimeFormatter SNAPSHOT_FORMAT =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
     private final CategoryRepository categoryRepository;
     private final RankingSnapshotRepository snapshotRepository;
     private final RankingItemRepository itemRepository;
@@ -68,6 +65,9 @@ public class RankingIngestService {
             if (r.getItems() == null || r.getItems().isEmpty()) {
                 throw new CustomException(ErrorCode.INGEST_ITEMS_EMPTY);
             }
+            for (RankingSnapshotIngestRequest.Item it : r.getItems()) {
+                if (it == null) throw new CustomException(ErrorCode.INGEST_BAD_REQUEST);
+            }
         }
 
         List<RankingSnapshotIngestResponse> responses = new ArrayList<>();
@@ -90,12 +90,11 @@ public class RankingIngestService {
         Category category = categoryRepository.findByCode(req.getCategory())
                 .orElseThrow(() -> new CustomException(ErrorCode.INGEST_TARGET_NOT_FOUND));
 
+        // 있으면 재사용, 없으면 생성
         RankingSnapshot snapshot = snapshotRepository
                 .findByCategoryAndSnapshotTime(category, snapshotTime)
                 .orElseGet(() ->
-                        snapshotRepository.save(
-                                RankingSnapshot.create(snapshotTime, category)
-                        )
+                        snapshotRepository.save(RankingSnapshot.create(snapshotTime, category))
                 );
 
         int inserted = 0;
