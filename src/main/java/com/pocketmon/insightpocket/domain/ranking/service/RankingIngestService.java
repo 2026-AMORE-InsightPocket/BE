@@ -27,7 +27,6 @@ public class RankingIngestService {
     private final CategoryRepository categoryRepository;
     private final RankingSnapshotRepository snapshotRepository;
     private final RankingItemRepository itemRepository;
-    private final SnapshotTimeParser snapshotTimeParser;
 
     /**
      * 스냅샷 1세트(카테고리 5개)를 한 번에 적재
@@ -50,7 +49,7 @@ public class RankingIngestService {
             throw new CustomException(ErrorCode.INGEST_INVALID_SNAPSHOT_TIME);
         }
 
-        LocalDateTime snapshotTime = snapshotTimeParser.parse(snapshotTimeStr);
+        LocalDateTime snapshotTime = SnapshotTimeParser.parse(snapshotTimeStr);
 
         // 공통 검증
         for (RankingSnapshotIngestRequest r : requests) {

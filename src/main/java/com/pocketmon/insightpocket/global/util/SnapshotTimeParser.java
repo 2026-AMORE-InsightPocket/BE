@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
-@Component
 public final class SnapshotTimeParser {
 
     private static final DateTimeFormatter FORMATTER =
