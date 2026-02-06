@@ -2,6 +2,8 @@ package com.pocketmon.insightpocket.domain.rag.service;
 
 import com.pocketmon.insightpocket.domain.rag.entity.RagDoc;
 import com.pocketmon.insightpocket.domain.rag.repository.RagDocRepository;
+import com.pocketmon.insightpocket.global.exception.CustomException;
+import com.pocketmon.insightpocket.global.response.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,8 @@ public class DailyReportService {
     public RagDoc getLatestDailyReport() {
         return ragDocRepository
                 .findTopByDocType_CodeOrderByReportDateDescCreatedAtDesc(DAILY_REPORT_CODE)
-                .orElseThrow(() -> new NoSuchElementException("데일리 리포트가 없습니다."));
+                .orElseThrow(() ->
+                        new CustomException(ErrorCode.RAG_DAILY_REPORT_NOT_FOUND)
+                );
     }
 }
