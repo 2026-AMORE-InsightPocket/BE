@@ -5,11 +5,16 @@ import com.pocketmon.insightpocket.domain.laneige.repository.LaneigeProductRepos
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.format.DateTimeFormatter;
+
 @Service
 @RequiredArgsConstructor
 public class LaneigeProductService {
 
     private final LaneigeProductRepository laneigeProductRepository;
+
+    private static final DateTimeFormatter OUT_FMT =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public LaneigeProductsResponse getLaneigeProducts() {
 
@@ -18,7 +23,7 @@ public class LaneigeProductService {
         String snapshotTime =
                 result.snapshotTime() == null
                         ? null
-                        : result.snapshotTime().toString().replace('T', ' ');
+                        : result.snapshotTime().format(OUT_FMT);
 
         return new LaneigeProductsResponse(
                 snapshotTime,
