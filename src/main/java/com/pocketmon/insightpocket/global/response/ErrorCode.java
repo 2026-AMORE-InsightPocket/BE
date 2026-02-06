@@ -19,6 +19,9 @@ public enum ErrorCode implements BaseCode {
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "AUTH-001", "인증에 실패했습니다."),
     INGEST_API_KEY_NOT_CONFIGURED(HttpStatus.INTERNAL_SERVER_ERROR, "AUTH-002", "서버 인증 설정이 누락되었습니다."),
 
+    // 랭킹
+    RANKING_NOT_FOUND(HttpStatus.NOT_FOUND, "RANKING-001", "랭킹이 존재하지 않습니다."),
+
     // 라네즈 제품
     PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "PRODUCT-001", "상품이 존재하지 않습니다."),
 

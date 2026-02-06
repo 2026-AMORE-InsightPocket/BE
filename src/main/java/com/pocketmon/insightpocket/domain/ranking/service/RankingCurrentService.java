@@ -2,6 +2,8 @@ package com.pocketmon.insightpocket.domain.ranking.service;
 
 import com.pocketmon.insightpocket.domain.ranking.dto.RankingCurrentResponse;
 import com.pocketmon.insightpocket.domain.ranking.repository.RankingRepository;
+import com.pocketmon.insightpocket.global.exception.CustomException;
+import com.pocketmon.insightpocket.global.response.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,10 @@ public class RankingCurrentService {
     public RankingCurrentResponse getCurrentRanking(long categoryId) {
 
         var result = rankingRepository.findCurrentRanking(categoryId);
+
+        if (result.items().isEmpty()) {
+            throw new CustomException(ErrorCode.RANKING_NOT_FOUND);
+        }
 
         String snapshotTime =
                 result.snapshotTime() == null
