@@ -2,6 +2,8 @@ package com.pocketmon.insightpocket.domain.ranking.controller;
 
 import com.pocketmon.insightpocket.domain.ranking.dto.RankingCurrentResponse;
 import com.pocketmon.insightpocket.domain.ranking.service.RankingCurrentService;
+import com.pocketmon.insightpocket.global.response.ApiResponse;
+import com.pocketmon.insightpocket.global.response.SuccessCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -30,9 +32,12 @@ public class RankingController {
                 """
     )
     @GetMapping("/current")
-    public RankingCurrentResponse getCurrentRanking(
+    public ApiResponse<RankingCurrentResponse> getCurrentRanking(
             @RequestParam("category") long categoryId
     ) {
-        return rankingCurrentService.getCurrentRanking(categoryId);
+        return ApiResponse.onSuccess(
+                rankingCurrentService.getCurrentRanking(categoryId),
+                SuccessCode.OK
+        );
     }
 }
