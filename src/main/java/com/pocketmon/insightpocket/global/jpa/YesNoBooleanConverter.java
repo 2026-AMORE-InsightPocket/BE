@@ -1,4 +1,4 @@
-package com.pocketmon.insightpocket.global.common;
+package com.pocketmon.insightpocket.global.jpa;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
