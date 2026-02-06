@@ -17,6 +17,10 @@ public enum ErrorCode implements BaseCode {
 
     // 크롤링 데이터 DB 적재
     INGEST_BAD_REQUEST(HttpStatus.BAD_REQUEST, "INGEST-400", "크롤링 적재 요청 데이터가 올바르지 않습니다."),
+    INGEST_EMPTY_PAYLOAD(HttpStatus.BAD_REQUEST, "INGEST-400-1", "적재 요청 목록이 비어있습니다."),
+    INGEST_INVALID_SNAPSHOT_TIME(HttpStatus.BAD_REQUEST, "INGEST-400-2", "snapshot_time 형식이 올바르지 않습니다. (yyyy-MM-dd HH:mm:ss)"),
+    INGEST_SNAPSHOT_TIME_MISMATCH(HttpStatus.BAD_REQUEST, "INGEST-400-3", "요청 내 snapshot_time 값이 서로 일치하지 않습니다."),
+    INGEST_ITEMS_EMPTY(HttpStatus.BAD_REQUEST, "INGEST-400-4", "적재 대상 items가 비어있습니다."),
     INGEST_DUPLICATE_SNAPSHOT(HttpStatus.CONFLICT, "INGEST-409", "이미 동일한 스냅샷 데이터가 존재합니다."),
     INGEST_DATA_INCONSISTENT(HttpStatus.CONFLICT, "INGEST-409-1", "크롤링 데이터 간 정합성이 맞지 않습니다."),
     INGEST_TARGET_NOT_FOUND(HttpStatus.NOT_FOUND, "INGEST-404", "적재 대상 리소스를 찾을 수 없습니다."),
