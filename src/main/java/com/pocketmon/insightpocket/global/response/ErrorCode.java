@@ -28,17 +28,18 @@ public enum ErrorCode implements BaseCode {
     INGEST_PROCESSING_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "INGEST-500", "크롤링 데이터 적재 중 오류가 발생했습니다."),
 
     // 인증
-    UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "AUTH-001", "인증에 실패했습니다."),
-    INGEST_API_KEY_NOT_CONFIGURED(HttpStatus.INTERNAL_SERVER_ERROR, "AUTH-002", "서버 인증 설정이 누락되었습니다."),
+    UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "AUTH-401", "인증에 실패했습니다."),
+    INGEST_API_KEY_NOT_CONFIGURED(HttpStatus.INTERNAL_SERVER_ERROR, "AUTH-500", "서버 인증 설정이 누락되었습니다."),
 
     // 랭킹
-    RANKING_NOT_FOUND(HttpStatus.NOT_FOUND, "RANKING-001", "랭킹이 존재하지 않습니다."),
+    RANKING_NOT_FOUND(HttpStatus.NOT_FOUND, "RANKING-404", "랭킹이 존재하지 않습니다."),
 
     // 라네즈 제품
-    PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "PRODUCT-001", "상품이 존재하지 않습니다."),
+    LANEIGE_PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "LANEIGE-404", "존재하지 않는 상품입니다."),
+    LANEIGE_INVALID_RANGE(HttpStatus.BAD_REQUEST, "LANEIGE-400", "유효하지 않은 조회 범위입니다."),
 
     // 리뷰 분석
-    REVIEW_SNAPSHOT_NOT_FOUND(HttpStatus.NOT_FOUND, "REVIEW-001", "해당 상품의 리뷰 스냅샷이 없습니다."),
+    REVIEW_SNAPSHOT_NOT_FOUND(HttpStatus.NOT_FOUND, "REVIEW-404", "해당 상품의 리뷰 스냅샷이 없습니다."),
     ;
 
     private final HttpStatus httpStatus;

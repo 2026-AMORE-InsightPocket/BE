@@ -8,8 +8,8 @@ public record LaneigeProductItem(
         String product_name,
         String style,
         BigDecimal price,
-        Integer rank_1,
+        Long rank_1,
         String rank_1_category,
-        Integer rank_2,
+        Long rank_2,
         String rank_2_category
 ) {}

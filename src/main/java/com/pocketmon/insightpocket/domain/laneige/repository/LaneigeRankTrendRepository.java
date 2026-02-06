@@ -21,7 +21,8 @@ public interface LaneigeRankTrendRepository extends JpaRepository<LaneigeProduct
         LEFT JOIN laneige_product_snapshots p
           ON r.snapshot_id = p.snapshot_id
          AND p.product_id = :productId
-        WHERE r.snapshot_time BETWEEN :startTime AND :endTime
+        WHERE r.snapshot_time >= :startTime
+            AND r.snapshot_time <  :endTime
         ORDER BY r.snapshot_time
     """, nativeQuery = true)
     List<LaneigeRankTrendRow> findRankTrends(

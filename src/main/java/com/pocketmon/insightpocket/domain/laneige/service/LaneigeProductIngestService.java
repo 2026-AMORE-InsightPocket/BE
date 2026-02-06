@@ -29,7 +29,6 @@ public class LaneigeProductIngestService {
     private final LaneigeProductRepository productRepository;
     private final LaneigeProductSnapshotRepository productSnapshotRepository;
     private final LaneigeAspectDetailRepository aspectDetailRepository;
-    private final SnapshotTimeParser snapshotTimeParser;
 
     @Transactional
     public LaneigeProductIngestResponse ingestBatch(List<LaneigeProductIngestRequest> requests) {
@@ -43,7 +42,7 @@ public class LaneigeProductIngestService {
             throw new CustomException(ErrorCode.INGEST_INVALID_SNAPSHOT_TIME);
         }
 
-        LocalDateTime snapshotTime = snapshotTimeParser.parse(snapshotTimeStr);
+        LocalDateTime snapshotTime = SnapshotTimeParser.parse(snapshotTimeStr);
 
         // snapshot_time 동일성 검증
         for (LaneigeProductIngestRequest r : requests) {
