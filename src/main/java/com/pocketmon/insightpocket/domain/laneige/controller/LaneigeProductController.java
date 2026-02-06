@@ -5,7 +5,10 @@ import com.pocketmon.insightpocket.domain.laneige.dto.RankTrendResponse;
 import com.pocketmon.insightpocket.domain.laneige.enums.RankRange;
 import com.pocketmon.insightpocket.domain.laneige.service.LaneigeProductService;
 import com.pocketmon.insightpocket.domain.laneige.service.LaneigeRankTrendService;
+import com.pocketmon.insightpocket.global.response.ApiResponse;
+import com.pocketmon.insightpocket.global.response.SuccessCode;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -29,8 +32,11 @@ public class LaneigeProductController {
                     """
     )
     @GetMapping("")
-    public LaneigeProductsResponse getLaneigeProducts() {
-        return laneigeProductService.getLaneigeProducts();
+    public ApiResponse<LaneigeProductsResponse> getLaneigeProducts() {
+        return ApiResponse.onSuccess(
+                laneigeProductService.getLaneigeProducts(),
+                SuccessCode.OK
+        );
     }
 
     @Operation(
@@ -41,10 +47,16 @@ public class LaneigeProductController {
                     """
     )
     @GetMapping("/{id}/rank-trends")
-    public RankTrendResponse getRankTrends(
+    public ApiResponse<RankTrendResponse> getRankTrends(
+            @Parameter(description = "상품 ID", example = "1", required = true)
             @PathVariable("id") Long productId,
+
+            @Parameter(description = "조회 기간 범위", required = true)
             @RequestParam RankRange range
     ) {
-        return rankTrendService.getRankTrends(productId, range);
+        return ApiResponse.onSuccess(
+                rankTrendService.getRankTrends(productId, range),
+                SuccessCode.OK
+        );
     }
 }
