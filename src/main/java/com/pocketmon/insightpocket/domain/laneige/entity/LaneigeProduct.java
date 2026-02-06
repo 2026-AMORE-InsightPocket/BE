@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 import static lombok.AccessLevel.PROTECTED;
 
@@ -64,14 +65,16 @@ public class LaneigeProduct extends BaseEntity {
         return p;
     }
 
-    public void updateBasicInfo(
-            String productName,
-            String imageUrl,
-            String style
-    ) {
+    public boolean updateBasicInfo(String productName, String imageUrl, String style) {
+        boolean changed =
+                !Objects.equals(this.productName, productName) ||
+                        !Objects.equals(this.imageUrl, imageUrl) ||
+                        !Objects.equals(this.style, style);
+
         this.productName = productName;
         this.imageUrl = imageUrl;
         this.style = style;
+        return changed;
     }
 
     public void updateCustomersSayIfChanged(

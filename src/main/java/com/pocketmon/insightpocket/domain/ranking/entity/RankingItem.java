@@ -1,7 +1,7 @@
 package com.pocketmon.insightpocket.domain.ranking.entity;
 
 import com.pocketmon.insightpocket.global.common.CreatedEntity;
-import com.pocketmon.insightpocket.global.common.YesNoBooleanConverter;
+import com.pocketmon.insightpocket.global.jpa.YesNoBooleanConverter;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
