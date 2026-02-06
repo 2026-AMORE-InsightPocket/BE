@@ -3,6 +3,8 @@ package com.pocketmon.insightpocket.domain.laneige.controller;
 import com.pocketmon.insightpocket.domain.laneige.dto.LaneigeProductIngestRequest;
 import com.pocketmon.insightpocket.domain.laneige.dto.LaneigeProductIngestResponse;
 import com.pocketmon.insightpocket.domain.laneige.service.LaneigeProductIngestService;
+import com.pocketmon.insightpocket.global.response.ApiResponse;
+import com.pocketmon.insightpocket.global.response.SuccessCode;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,10 +20,10 @@ public class LaneigeProductIngestController {
     private final LaneigeProductIngestService laneigeProductIngestService;
 
     @PostMapping("/products/ingest")
-    public ResponseEntity<LaneigeProductIngestResponse> ingestProducts(
+    public ApiResponse<LaneigeProductIngestResponse> ingestProducts(
             @RequestBody @Valid List<@Valid LaneigeProductIngestRequest> requests
     ) {
         LaneigeProductIngestResponse res = laneigeProductIngestService.ingestBatch(requests);
-        return ResponseEntity.ok(res);
+        return ApiResponse.onSuccess(res, SuccessCode.OK);
     }
 }
