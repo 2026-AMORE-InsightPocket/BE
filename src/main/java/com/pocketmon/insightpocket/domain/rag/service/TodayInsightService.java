@@ -12,14 +12,10 @@ import java.util.NoSuchElementException;
 @RequiredArgsConstructor
 public class TodayInsightService {
 
-    private static final String DAILY_REPORT_CODE = "DAILY_REPORT";
-
-    private final RagDocRepository ragDocRepository;
+    private final DailyReportService dailyReportService;
 
     public TodayInsightResponse getLatestInsight() {
-        RagDoc doc = ragDocRepository
-                .findTopByDocType_CodeOrderByReportDateDescCreatedAtDesc(DAILY_REPORT_CODE)
-                .orElseThrow(() -> new NoSuchElementException("데일리 리포트가 없습니다."));
+        RagDoc doc = dailyReportService.getLatestDailyReport();
 
         String insight = extractInsightContent(doc.getBodyMd());
 
@@ -30,7 +26,7 @@ public class TodayInsightService {
         );
     }
 
-    // extractInsightContent는 기존 그대로
+    // 오늘의 인사이트 문구
     private String extractInsightContent(String md) {
         if (md == null) return "";
 

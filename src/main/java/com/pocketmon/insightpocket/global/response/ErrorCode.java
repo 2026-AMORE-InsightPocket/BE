@@ -40,6 +40,9 @@ public enum ErrorCode implements BaseCode {
 
     // 리뷰 분석
     REVIEW_SNAPSHOT_NOT_FOUND(HttpStatus.NOT_FOUND, "REVIEW-404", "해당 상품의 리뷰 스냅샷이 없습니다."),
+
+    // 데일리 리포트
+    RAG_DAILY_REPORT_NOT_FOUND(HttpStatus.NOT_FOUND, "RAG-404", "데일리 리포트가 존재하지 않습니다."),
     ;
 
     private final HttpStatus httpStatus;
