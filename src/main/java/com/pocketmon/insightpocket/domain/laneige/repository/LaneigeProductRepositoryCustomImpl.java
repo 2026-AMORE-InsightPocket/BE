@@ -13,7 +13,7 @@ import java.util.Map;
 
 @Repository
 @RequiredArgsConstructor
-public class LaneigeProductRepositoryImpl implements LaneigeProductRepositoryCustom {
+public class LaneigeProductRepositoryCustomImpl implements LaneigeProductRepositoryCustom {
 
     private final NamedParameterJdbcTemplate jdbc;
 
