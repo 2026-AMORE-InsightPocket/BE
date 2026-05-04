@@ -49,8 +49,9 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOriginPatterns(List.of(
-                "https://tenma.store",
-                "https://www.tenma.store",
+                "https://boradora.store",
+                "https://www.boradora.store",
+                "https://api.boradora.store",
                 "http://localhost:3000",
                 "http://localhost:5173",
                 "https://insight-pocket.vercel.app"

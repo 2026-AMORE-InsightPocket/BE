@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  backend:
+    image: heezuko/insight-pocket-backend:latest
+    container_name: insight-pocket
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    env_file:
+      - .env

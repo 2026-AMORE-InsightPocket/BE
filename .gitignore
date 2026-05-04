@@ -48,3 +48,7 @@ application-prod.yml
 
 ## env
 .env
+
+## keys
+*.pem
+*.key

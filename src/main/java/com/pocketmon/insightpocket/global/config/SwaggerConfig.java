@@ -11,7 +11,7 @@ import java.util.List;
 @Configuration
 public class SwaggerConfig {
 
-    private static final String PROD_SERVER = "https://www.tenma.store";
+    private static final String PROD_SERVER = "https://api.boradora.store";
 
     @Bean
     public OpenAPI openAPI() {
