@@ -22,25 +22,24 @@ public class DashboardRepositoryImpl implements DashboardRepository {
     public RisingResult findRisingProducts() {
 
         String sql = """
-        WITH latest_two AS (
-          SELECT snapshot_id, snapshot_time, rn
-          FROM (
-            SELECT r.snapshot_id,
-                   r.snapshot_time,
-                   ROW_NUMBER() OVER (ORDER BY r.snapshot_time DESC) AS rn
-            FROM laneige_snapshot_runs r
-          )
-          WHERE rn <= 2
-        ),
-        today_snap AS (
+        WITH today_snap AS (
           SELECT snapshot_id, snapshot_time
-          FROM latest_two
-          WHERE rn = 1
+          FROM (
+            SELECT r.snapshot_id, r.snapshot_time
+            FROM laneige_snapshot_runs r
+            ORDER BY r.snapshot_time DESC
+          )
+          WHERE ROWNUM = 1
         ),
         prev_snap AS (
           SELECT snapshot_id
-          FROM latest_two
-          WHERE rn = 2
+          FROM (
+            SELECT r.snapshot_id
+            FROM laneige_snapshot_runs r, today_snap t
+            WHERE r.snapshot_time <= t.snapshot_time - 7
+            ORDER BY r.snapshot_time DESC
+          )
+          WHERE ROWNUM = 1
         ),
         today_ranked AS (
           SELECT
